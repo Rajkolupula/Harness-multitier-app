@@ -1,0 +1,4 @@
+CREATE DATABASE myapp;
+CREATE USER 'myuser'@'%' IDENTIFIED BY 'mypassword';
+GRANT ALL PRIVILEGES ON myapp.* TO 'myuser'@'%';
+FLUSH PRIVILEGES;
