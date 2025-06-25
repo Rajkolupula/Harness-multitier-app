@@ -4,16 +4,17 @@ metadata:
   name: mysql-secret
 type: Opaque
 data:
-  mysql-root-password: bXlzc2VjcmV0
+  mysql-root-password: bXlzc2VjcmV0  # base64 for 'mysecret'
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mysql-config
+  name: mysql-env
 data:
   MYSQL_DATABASE: myapp
   MYSQL_USER: myuser
   MYSQL_PASSWORD: mypassword
+  MYSQL_ALLOW_EMPTY_PASSWORD: "no"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -21,11 +22,10 @@ metadata:
   name: mysql-init
 data:
   init.sql: |
-    CREATE DATABASE myapp;
-    CREATE USER 'myuser'@'%' IDENTIFIED BY 'mypassword';
+    CREATE DATABASE IF NOT EXISTS myapp;
+    CREATE USER IF NOT EXISTS 'myuser'@'%' IDENTIFIED BY 'mypassword';
     GRANT ALL PRIVILEGES ON myapp.* TO 'myuser'@'%';
     FLUSH PRIVILEGES;
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -42,36 +42,41 @@ spec:
         app: mysql
     spec:
       containers:
-      - name: mysql
-        image: mysql:5.7
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-secret
-              key: mysql-root-password
-        - name: MYSQL_DATABASE
-          valueFrom:
-            configMapKeyRef:
-              name: mysql-config
-              key: MYSQL_DATABASE
-        - name: MYSQL_USER
-          valueFrom:
-            configMapKeyRef:
-              name: mysql-config
-              key: MYSQL_USER
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            configMapKeyRef:
-              name: mysql-config
-              key: MYSQL_PASSWORD
-        volumeMounts:
-        - name: init-db
-          mountPath: /docker-entrypoint-initdb.d
+        - name: mysql
+          image: mysql:5.7
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-root-password
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-env
+                  key: MYSQL_DATABASE
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-env
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-env
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_ALLOW_EMPTY_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-env
+                  key: MYSQL_ALLOW_EMPTY_PASSWORD
+          volumeMounts:
+            - name: init-db
+              mountPath: /docker-entrypoint-initdb.d
       volumes:
-      - name: init-db
-        configMap:
-          name: mysql-init
+        - name: init-db
+          configMap:
+            name: mysql-init
 ---
 apiVersion: v1
 kind: Service
@@ -81,5 +86,5 @@ spec:
   selector:
     app: mysql
   ports:
-  - port: 3306
-  
+    - port: 3306
+      targetPort: 3306
