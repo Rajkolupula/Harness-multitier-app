@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: <HARNESS_FRONTEND_IMAGE>
+        image: viswanadh7/multi-frontend:v1
         ports:
         - containerPort: 80
 ---
