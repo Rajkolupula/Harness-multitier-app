@@ -4,7 +4,7 @@ function App() {
   const [backendMsg, setBackendMsg] = useState("");
 
   useEffect(() => {
-    fetch("/api")
+    fetch("http://backend:3000/api")
       .then((res) => res.json())
       .then((data) => setBackendMsg(data.message))
       .catch((err) => console.error("API error:", err));
