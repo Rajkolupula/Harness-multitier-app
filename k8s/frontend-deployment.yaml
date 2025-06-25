@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: viswanadh7/multi-frontend:v1
+        image: viswanadh7/multi-frontend:v2
         ports:
         - containerPort: 80
 ---
