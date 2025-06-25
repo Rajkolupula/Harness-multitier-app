@@ -30,6 +30,8 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    redeploy-timestamp: "{{ timestamp }}" 
   name: mysql
 spec:
   replicas: 1

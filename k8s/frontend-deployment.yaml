@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    redeploy-timestamp: "{{ timestamp }}" 
   name: frontend
 spec:
   replicas: 1
