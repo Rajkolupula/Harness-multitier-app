@@ -11,7 +11,7 @@ spec:
       paths:
       # Backend rule - /api path
       - path: /api(/|$)(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: backend
@@ -20,7 +20,7 @@ spec:
 
       # Frontend rule - catch-all except /api
       - path: /(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: frontend
