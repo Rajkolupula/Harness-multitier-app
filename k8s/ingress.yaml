@@ -9,6 +9,16 @@ spec:
   rules:
   - http:
       paths:
+      # Backend rule - /api path
+      - path: /api(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: backend
+            port:
+              number: 3000
+
+      # Frontend rule - catch-all except /api
       - path: /(.*)
         pathType: Prefix
         backend:
@@ -16,10 +26,3 @@ spec:
             name: frontend
             port:
               number: 80
-      - path: /api(/|$)(.*)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: backend
-            port:
-              number: 3000
