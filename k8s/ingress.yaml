@@ -8,22 +8,22 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - http:
-      paths:
-        # Route /api requests to backend with rewrite
-        - path: /api(/|$)(.*)
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: backend
-              port:
-                number: 3000
+    - http:
+        paths:
+          # API requests → rewrite path
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 3000
 
-        # Route everything else directly to frontend (no rewrite)
-        - path: /.*    # matches everything else including static assets
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: frontend
-              port:
-                number: 80
+          # All other requests → no rewrite!
+          - path: /?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
